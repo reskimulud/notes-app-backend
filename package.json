@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./src/server.js",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "migrate": "node-pg-migrate"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "dotenv": "^16.0.0",
     "joi": "^17.6.0",
     "nanoid": "^3.1.30",
+    "node-pg-migrate": "^6.2.1",
     "pg": "^8.7.3"
   }
 }
