@@ -6,8 +6,8 @@ const routes = (handler) => [
   },
   {
     method: 'GET',
-    path: '/users',
-    handler: handler.getUsersHandler,
+    path: '/users/{id}',
+    handler: handler.getUserByIdHandler,
   },
 ];
 
