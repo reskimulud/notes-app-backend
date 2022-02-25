@@ -94,7 +94,7 @@ const init = async () => {
       options: {
         collaborationsService,
         notesService,
-        CollaborationsValidator,
+        validator: CollaborationsValidator,
       },
     },
   ]);

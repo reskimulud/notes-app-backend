@@ -1,5 +1,5 @@
-const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
+const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
 
 class CollaborationsService {
@@ -20,7 +20,6 @@ class CollaborationsService {
     if (!result.rows.length) {
       throw new InvariantError('Kolaborasi gagal ditambahkan');
     }
-
     return result.rows[0].id;
   }
 

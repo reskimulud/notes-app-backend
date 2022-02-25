@@ -1,8 +1,8 @@
 const ClientError = require('../../exceptions/ClientError');
 
 class CollaborationsHandler {
-  constructor(collaborationService, notesService, validator) {
-    this._collaborationService = collaborationService;
+  constructor(collaborationsService, notesService, validator) {
+    this._collaborationsService = collaborationsService;
     this._notesService = notesService;
     this._validator = validator;
 
@@ -16,32 +16,35 @@ class CollaborationsHandler {
       const { id: credentialId } = request.auth.credentials;
       const { noteId, userId } = request.payload;
 
-      this._notesService.verifyNoteOwner(noteId, credentialId);
-      const collaborationId = await this._collaborationService.addCollaboration(noteId, userId);
+      await this._notesService.verifyNoteOwner(noteId, credentialId);
+      const collaborationId = await this._collaborationsService.addCollaboration(noteId, userId);
 
-      return {
+      const response = h.response({
         status: 'success',
         message: 'Kolaborasi berhasil ditambahkan',
         data: {
           collaborationId,
         },
-      };
-    } catch (err) {
-      if (err instanceof ClientError) {
+      });
+      response.code(201);
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
         const response = h.response({
           status: 'fail',
-          message: err.message,
+          message: error.message,
         });
-        response.code(err.statusCode);
+        response.code(error.statusCode);
         return response;
       }
 
+      // Server ERROR!
       const response = h.response({
         status: 'error',
-        message: 'Maaf, terjadi kegagalan pada server kami',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
       });
       response.code(500);
-      console.error(err);
+      console.error(error);
       return response;
     }
   }
@@ -52,29 +55,30 @@ class CollaborationsHandler {
       const { id: credentialId } = request.auth.credentials;
       const { noteId, userId } = request.payload;
 
-      this._notesService.verifyNoteOwner(noteId, credentialId);
-      await this._collaborationService.deleteCollaboration(noteId, userId);
+      await this._notesService.verifyNoteOwner(noteId, credentialId);
+      await this._collaborationsService.deleteCollaboration(noteId, userId);
 
       return {
         status: 'success',
         message: 'Kolaborasi berhasil dihapus',
       };
-    } catch (err) {
-      if (err instanceof ClientError) {
+    } catch (error) {
+      if (error instanceof ClientError) {
         const response = h.response({
           status: 'fail',
-          message: err.message,
+          message: error.message,
         });
-        response.code(err.statusCode);
+        response.code(error.statusCode);
         return response;
       }
 
+      // Server ERROR!
       const response = h.response({
         status: 'error',
-        message: 'Maaf, terjadi kegagalan pada server kami',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
       });
       response.code(500);
-      console.error(err);
+      console.error(error);
       return response;
     }
   }
