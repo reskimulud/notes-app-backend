@@ -2,7 +2,7 @@ const InvariantError = require('../../exceptions/InvariantError');
 const ExportsNotesPayloadSchema = require('./schema');
 
 const ExportsValidator = {
-  validateExportsNotesPayload: (payload) => {
+  validateExportNotesPayload: (payload) => {
     const validationResult = ExportsNotesPayloadSchema.validate(payload);
 
     if (validationResult.error) {
