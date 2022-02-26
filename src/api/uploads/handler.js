@@ -18,7 +18,7 @@ class UploadsHandler {
       const response = h.response({
         status: 'success',
         data: {
-          filename: `http://${process.env.HOST}:${process.env.PORT}/uploads/images/${filename}`,
+          fileLocation: `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`,
         },
       });
       response.code(201);
@@ -33,9 +33,10 @@ class UploadsHandler {
         return response;
       }
 
+      // Server ERROR!
       const response = h.response({
         status: 'error',
-        message: 'maaf, terjadi kegagalan pad aserver kami.',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
       });
       response.code(500);
       console.error(error);
