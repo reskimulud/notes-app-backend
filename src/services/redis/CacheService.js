@@ -3,10 +3,10 @@ const redis = require('redis');
 class CacheService {
   constructor() {
     this._client = redis.createClient({
+      password: process.env.REDIS_PASSWORD,
       socket: {
         host: process.env.REDIS_SERVER,
         port: process.env.REDIS_PORT,
-        password: process.env.REDIS_PASSWORD,
         database: process.env.REDIS_DATABASE,
       },
     });
