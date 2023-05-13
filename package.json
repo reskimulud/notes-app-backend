@@ -30,6 +30,8 @@
     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.0",
     "joi": "^17.6.0",
+    "mysql": "^2.18.1",
+    "mysql-migrations": "^1.0.7",
     "nanoid": "^3.1.30",
     "node-pg-migrate": "^6.2.1",
     "pg": "^8.7.3",
