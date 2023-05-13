@@ -8,23 +8,27 @@ const path = require('path');
 
 // notes
 const notes = require('./api/notes');
-const NotesService = require('./services/postgres/NotesService');
+const NotesServicePg = require('./services/postgres/NotesService');
+const NotesServiceMysql = require('./services/mysql/NotesService');
 const NotesValidator = require('./validator/notes');
 
 // users
 const users = require('./api/users');
-const UsersService = require('./services/postgres/UsersService');
+const UsersServicePg = require('./services/postgres/UsersService');
+const UsersServiceMysql = require('./services/mysql/UsersService');
 const UsersValidator = require('./validator/users');
 
 // authentications
 const authentications = require('./api/authentications');
-const AuthenticationsService = require('./services/postgres/AuthenticationsService');
+const AuthenticationsServicePg = require('./services/postgres/AuthenticationsService');
+const AuthenticationsServiceMysql = require('./services/mysql/AuthenticationsService');
 const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
 // collaborations
 const collaborations = require('./api/collaborations');
-const CollaborationsService = require('./services/postgres/CollaborationsService');
+const CollaborationsServicePg = require('./services/postgres/CollaborationsService');
+const CollaborationsServiceMysql = require('./services/mysql/CollaborationsService');
 const CollaborationsValidator = require('./validator/collaborations');
 
 // exports
@@ -40,12 +44,33 @@ const UploadsValidator = require('./validator/uploads');
 // cache
 const CacheService = require('./services/redis/CacheService');
 
+// mysql
+const MySQLDatabase = require('./conf/MySQLDatabase');
+
 const init = async () => {
+  let notesService;
+  let usersService;
+  let authenticationsService;
+  let collaborationsService;
+
   const cacheService = new CacheService();
-  const collaborationsService = new CollaborationsService(cacheService);
-  const notesService = new NotesService(collaborationsService, cacheService);
-  const usersService = new UsersService();
-  const authenticationsService = new AuthenticationsService();
+
+  // mendefinisikan service sesuai dengan kondisi
+  if (process.env.USE_DB === 'mysql') {
+    console.log('use mysql');
+    const mysqlPool = new MySQLDatabase();
+    collaborationsService = new CollaborationsServiceMysql(mysqlPool, cacheService);
+    notesService = new NotesServiceMysql(mysqlPool, collaborationsService, cacheService);
+    usersService = new UsersServiceMysql(mysqlPool);
+    authenticationsService = new AuthenticationsServiceMysql(mysqlPool);
+  } else {
+    console.log('use postgres');
+    collaborationsService = new CollaborationsServicePg(cacheService);
+    notesService = new NotesServicePg(collaborationsService, cacheService);
+    usersService = new UsersServicePg();
+    authenticationsService = new AuthenticationsServicePg();
+  }
+
   const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
 
   const server = Hapi.server({

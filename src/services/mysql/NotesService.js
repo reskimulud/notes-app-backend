@@ -31,13 +31,13 @@ class NotesService {
 
     const result = await this._pool.query(query);
 
-    if (!result[0].id) {
+    if (result.affectedRows < 1) {
       throw new InvariantError('Catatan gagal ditambahkan');
     }
 
     await this._cacheService.delete(`notes:${owner}`);
 
-    return result[0].id;
+    return id;
   }
 
   async getNotes(owner) {
@@ -46,9 +46,9 @@ class NotesService {
       return JSON.parse(result);
     } catch (error) {
       const query = `SELECT notes.* FROM notes
-        LEFT JOIN collaborations ON collaborations.note_id = notes.id
-        WHERE notes.owner = $1 OR collaborations.user_id = '${owner}'
-        GROUP BY notes.id`;
+      LEFT JOIN collaborations ON collaborations.note_id = notes.id
+      WHERE notes.owner = '${owner}' OR collaborations.user_id = '${owner}'
+      GROUP BY notes.id`;
 
       const result = await this._pool.query(query);
       const mappeddResult = result.map(mapDBToModel);
@@ -67,7 +67,7 @@ class NotesService {
 
     const result = await this._pool.query(query);
 
-    if (!result.length) {
+    if (!result || result.length < 1 || result.affectedRows < 1) {
       throw new NotFoundError('Catatan tidak ditemukan');
     }
 
@@ -85,31 +85,37 @@ class NotesService {
 
     const result = await this._pool.query(query);
 
-    if (!result.length) {
+    if (!result || result.length < 1 || result.affectedRows < 1) {
       throw new NotFoundError('Gagal memperbarui catatan. Id tidak ditemukan');
     }
 
-    const { owner } = result[0];
+    const query2 = `SELECT owner FROM notes WHERE id = '${id}'`;
+    const result2 = await this._pool.query(query2);
+
+    const { owner } = result2[0];
     await this._cacheService.delete(`notes:${owner}`);
   }
 
   async deleteNoteById(id) {
+    const query2 = `SELECT owner FROM notes WHERE id = '${id}'`;
+    const result2 = await this._pool.query(query2);
+
     const query = `DELETE FROM notes WHERE id = '${id}'`;
 
     const result = await this._pool.query(query);
 
-    if (!result.length) {
+    if (!result || result.length < 1 || result.affectedRows < 1) {
       throw new NotFoundError('Catatan gagal dihapus. Id tidak ditemukan');
     }
 
-    const { owner } = result[0];
+    const { owner } = result2[0];
     await this._cacheService.delete(`notes:${owner}`);
   }
 
   async verifyNoteOwner(id, owner) {
     const query = `SELECT * FROM notes WHERE id = '${id}'`;
     const result = await this._pool.query(query);
-    if (!result.length) {
+    if (!result || result.length < 1 || result.affectedRows < 1) {
       throw new NotFoundError('Catatan tidak ditemukan');
     }
     const note = result[0];

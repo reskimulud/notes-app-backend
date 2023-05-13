@@ -19,12 +19,12 @@ class CollaborationsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.length) {
+    if (!result || result.length < 1 || result.affectedRows < 1) {
       throw new InvariantError('Kolaborasi gagal ditambahkan');
     }
 
     await this._cacheService.delete(`notes:${userId}`);
-    return result[0].id;
+    return id;
   }
 
   async deleteCollaboration(noteId, userId) {
@@ -33,7 +33,7 @@ class CollaborationsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.length) {
+    if (!result || result.length < 1 || result.affectedRows < 1) {
       throw new InvariantError('Kolaborasi gagal dihapus');
     }
 
@@ -46,7 +46,7 @@ class CollaborationsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.length) {
+    if (!result || result.length < 1 || result.affectedRows < 1) {
       throw new InvariantError('Kolaborasi gagal diverifikasi');
     }
   }

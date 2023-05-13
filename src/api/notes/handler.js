@@ -33,6 +33,7 @@ class NotesHandler {
       response.code(201);
       return response;
     } catch (error) {
+      console.error(error);
       if (error instanceof ClientError) {
         const response = h.response({
           status: 'fail',
