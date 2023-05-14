@@ -44,8 +44,11 @@ class NotesService {
 
   async getNotes(owner) {
     try {
-      const result = await this._cacheService.get(`notes:${owner}`);
-      return JSON.parse(result);
+      if (process.env.USE_CACHE === 'true') {
+        const result = await this._cacheService.get(`notes:${owner}`);
+        return JSON.parse(result);
+      }
+      throw new Error('Cache not found');
     } catch (error) {
       const query = `SELECT notes.* FROM notes
       LEFT JOIN collaborations ON collaborations.note_id = notes.id
