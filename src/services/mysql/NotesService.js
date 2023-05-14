@@ -35,7 +35,9 @@ class NotesService {
       throw new InvariantError('Catatan gagal ditambahkan');
     }
 
-    await this._cacheService.delete(`notes:${owner}`);
+    if (process.env.USE_CACHE === 'true') {
+      await this._cacheService.delete(`notes:${owner}`);
+    }
 
     return id;
   }
@@ -53,7 +55,9 @@ class NotesService {
       const result = await this._pool.query(query);
       const mappeddResult = result.map(mapDBToModel);
 
-      await this._cacheService.set(`notes:${owner}`, JSON.stringify(mappeddResult));
+      if (process.env.USE_CACHE === 'true') {
+        await this._cacheService.set(`notes:${owner}`, JSON.stringify(mappeddResult));
+      }
 
       return mappeddResult;
     }
@@ -93,7 +97,9 @@ class NotesService {
     const result2 = await this._pool.query(query2);
 
     const { owner } = result2[0];
-    await this._cacheService.delete(`notes:${owner}`);
+    if (process.env.USE_CACHE === 'true') {
+      await this._cacheService.delete(`notes:${owner}`);
+    }
   }
 
   async deleteNoteById(id) {
@@ -109,7 +115,9 @@ class NotesService {
     }
 
     const { owner } = result2[0];
-    await this._cacheService.delete(`notes:${owner}`);
+    if (process.env.USE_CACHE === 'true') {
+      await this._cacheService.delete(`notes:${owner}`);
+    }
   }
 
   async verifyNoteOwner(id, owner) {

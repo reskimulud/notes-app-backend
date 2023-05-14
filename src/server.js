@@ -54,6 +54,7 @@ const init = async () => {
   let collaborationsService;
 
   const cacheService = new CacheService();
+  console.log('use cache:', process.env.USE_CACHE);
 
   // mendefinisikan service sesuai dengan kondisi
   if (process.env.USE_DB === 'mysql') {

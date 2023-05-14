@@ -23,7 +23,9 @@ class CollaborationsService {
       throw new InvariantError('Kolaborasi gagal ditambahkan');
     }
 
-    await this._cacheService.delete(`notes:${userId}`);
+    if (process.env.USE_CACHE === 'true') {
+      await this._cacheService.delete(`notes:${userId}`);
+    }
     return id;
   }
 
