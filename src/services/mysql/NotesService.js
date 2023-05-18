@@ -53,7 +53,8 @@ class NotesService {
       const query = `SELECT notes.* FROM notes
       LEFT JOIN collaborations ON collaborations.note_id = notes.id
       WHERE notes.owner = '${owner}' OR collaborations.user_id = '${owner}'
-      GROUP BY notes.id`;
+      GROUP BY notes.id
+      ORDER BY updated_at DESC`;
 
       const result = await this._pool.query(query);
       const mappeddResult = result.map(mapDBToModel);
